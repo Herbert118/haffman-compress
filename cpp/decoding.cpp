@@ -28,18 +28,19 @@ void Decoding::startDecoding()
     char * fileBuffer;
     long wsize;//save the write size
     char * normFileBuf;
-    for(start = sizeof(FileHeader);start < headerp->fsize-bufferSize;start+=bufferSize){
+    for(start = sizeof(FileHeader);start < headerp->fsize+sizeof(FileHeader)-bufferSize;start+=bufferSize){
         fileBuffer = fu2.read_b_a(crpFile,start, bufferSize);//coding with attention,every symbol is important
         normFileBuf = biToStr(fileBuffer, bufferSize,8,wsize);
         saveCoding(normFileBuf,wsize);
         delete fileBuffer;
         //delete normFileBuf; //normFileBuf will be deleted in biToStr
     }
-
-    if(headerp->fsize%bufferSize!=0){
-
-        fileBuffer = fu2.read_b_a(crpFile, start, bufferSize);
-        normFileBuf = biToStr(fileBuffer, headerp->fsize%bufferSize,headerp->lastNum,wsize);
+    
+    cout<< "start"<<start - sizeof(FileHeader)<<endl;
+    long lastSize = headerp->fsize%bufferSize;
+    if(lastSize!=0){
+        fileBuffer = fu2.read_b_a(crpFile, start, lastSize);
+        normFileBuf = biToStr(fileBuffer, lastSize,headerp->lastNum,wsize);
         saveCoding(normFileBuf,wsize);
         delete fileBuffer;
         //delete normFileBuf;
